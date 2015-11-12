@@ -1,4 +1,4 @@
-package com.certusnet.cassandra.spring_cassandra.domain;
+package com.cassandra.spring_cassandra.repository;
 
 import java.util.List;
 

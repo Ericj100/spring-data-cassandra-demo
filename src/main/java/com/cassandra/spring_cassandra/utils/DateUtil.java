@@ -1,4 +1,4 @@
-package com.certusnet.cassandra.spring_cassandra.utils;
+package com.cassandra.spring_cassandra.utils;
 
 import java.text.DateFormat;
 import java.text.ParseException;

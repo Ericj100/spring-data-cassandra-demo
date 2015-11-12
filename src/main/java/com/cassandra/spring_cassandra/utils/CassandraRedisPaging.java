@@ -1,38 +1,18 @@
-package com.certusnet.cassandra.spring_cassandra.utils;
-import io.netty.buffer.ByteBufUtil;
-
+package com.cassandra.spring_cassandra.utils;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
- 
-
-
-
-
-
-
-
-
-
-
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cassandra.core.CqlOperations;
 import org.springframework.cassandra.core.RowMapper;
 import org.springframework.cassandra.support.exception.CassandraTypeMismatchException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.cassandra.core.CassandraConverterRowCallback;
 import org.springframework.data.cassandra.core.CassandraOperations;
-import org.springframework.stereotype.Component;
 
-import com.certusnet.cassandra.spring_cassandra.domain.AlarmSn;
-import com.certusnet.cassandra.spring_cassandra.domain.Pager;
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PagingState;
@@ -44,9 +24,6 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.exceptions.DriverException;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select;
-import com.datastax.driver.core.querybuilder.Select.Where;
  
 /**
  * 
@@ -54,7 +31,7 @@ import com.datastax.driver.core.querybuilder.Select.Where;
  * rows one by one.
  *
  */
-public class CassandraPaging {
+public class CassandraRedisPaging {
  
 	private CassandraOperations cassandraTemplate;
 	
@@ -68,11 +45,11 @@ public class CassandraPaging {
 	
 	private PagingState pagingState;
 	 
-	public CassandraPaging() {
+	public CassandraRedisPaging() {
     }
 	
 	
-    public CassandraPaging(Session session) {
+    public CassandraRedisPaging(Session session) {
         this.session = session;
     }
 	
@@ -119,7 +96,7 @@ public class CassandraPaging {
     public <T> List<T> fetchRowsWithPage(String cql, Object[] params, Integer pageIndex, Class<T> type) {
     	
     	Session session = cassandraTemplate.getSession();
-    	PreparedStatement pst = session.prepare("select * from ott_alarm where sn=? and begin_date=?");
+    	PreparedStatement pst = session.prepare(cql);
     	BoundStatement bound = pst.bind(params);
     	bound.setFetchSize(fetchSize);
     	//获取Statement的hash值
@@ -133,12 +110,13 @@ public class CassandraPaging {
     	
     	if(i != 0){
     		String pagingStatString = redisCommons.get(key + ".pagingState");
-    		bound.setPagingState(PagingState.fromString(pagingStatString));
+    		if(pagingStatString != null){
+    			bound.setPagingState(PagingState.fromString(pagingStatString));
+    		}
     	}
     	
     	ResultSet rs = session.execute(bound);
     	PagingState paingState = rs.getExecutionInfo().getPagingState();
-    	System.err.println(paingState);
     	CassandraConverterRowCallback<T> readRowCallback = new CassandraConverterRowCallback<T>(cassandraTemplate.getConverter(), type);
     	int remainingNext = rs.getAvailableWithoutFetching();
     	while(rs.iterator().hasNext()){
@@ -150,7 +128,9 @@ public class CassandraPaging {
 			}
     	}
     	redisCommons.expire(key + ".list" + i, 10, TimeUnit.MINUTES);
-    	redisCommons.set(key + ".pagingState", paingState.toString(), 10, TimeUnit.MINUTES);
+    	if(paingState != null){
+    		redisCommons.set(key + ".pagingState", paingState.toString(), 10, TimeUnit.MINUTES);
+    	}
     	
     	return redisCommons.lrange(key + ".list" + i, pageIndex % pageSize == 0 ? pageSize : pageIndex % pageSize, pageSize);
     }

@@ -1,10 +1,10 @@
-package com.certusnet.cassandra.spring_cassandra.mapper;
+package com.cassandra.spring_cassandra.mapper;
 
 import java.util.List;
 
 import org.springframework.cassandra.core.RowMapper;
 
-import com.certusnet.cassandra.spring_cassandra.domain.AlarmSn;
+import com.cassandra.spring_cassandra.domain.AlarmSn;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.DriverException;
 

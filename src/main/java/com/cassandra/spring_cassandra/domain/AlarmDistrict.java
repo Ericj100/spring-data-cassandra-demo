@@ -1,6 +1,5 @@
-package com.certusnet.cassandra.spring_cassandra.domain;
+package com.cassandra.spring_cassandra.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.cassandra.core.Ordering;
@@ -9,16 +8,16 @@ import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.mapping.Table;
 
-@Table("ott_alarm")
-public class AlarmSn implements Serializable{
+@Table("ott_alarm_by_district")
+public class AlarmDistrict {
 
 	@PrimaryKeyColumn(name = "begin_date", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
 	private Integer beginDate;
 	
-	@PrimaryKeyColumn(name = "sn", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
+	@PrimaryKeyColumn(name = "sn", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
 	private String sn;
 	
-	@Column("district_id")
+	@PrimaryKeyColumn(name = "district_id", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
 	private Long districtId;
 	
 	@Column("platform_id")
@@ -126,7 +125,7 @@ public class AlarmSn implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AlarmSn other = (AlarmSn) obj;
+		AlarmDistrict other = (AlarmDistrict) obj;
 		if (beginTime == null) {
 			if (other.beginTime != null)
 				return false;

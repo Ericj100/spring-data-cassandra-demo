@@ -1,4 +1,4 @@
-package com.certusnet.cassandra.spring_cassandra.utils;
+package com.cassandra.spring_cassandra.utils;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -7,8 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-
-import com.certusnet.cassandra.spring_cassandra.domain.Pager;
 
 /**
  * redis公共类.

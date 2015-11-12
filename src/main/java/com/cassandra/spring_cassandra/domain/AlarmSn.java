@@ -1,5 +1,6 @@
-package com.certusnet.cassandra.spring_cassandra.domain;
+package com.cassandra.spring_cassandra.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.cassandra.core.Ordering;
@@ -8,25 +9,27 @@ import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.mapping.Table;
 
-@Table("ott_alarm_by_district")
-public class AlarmDistrict {
+@Table("alarm")
+public class AlarmSn implements Serializable{
+
+	private static final long serialVersionUID = 6435825007045975300L;
 
 	@PrimaryKeyColumn(name = "begin_date", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
 	private Integer beginDate;
 	
-	@PrimaryKeyColumn(name = "sn", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
+	@PrimaryKeyColumn(name = "sn", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
 	private String sn;
 	
-	@PrimaryKeyColumn(name = "district_id", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
-	private Long districtId;
+	@Column("district_id")
+	private Integer districtId;
 	
 	@Column("platform_id")
-	private Long platformId;
+	private Integer platformId;
 	
 	@Column("account")
 	private String account;
 	
-	@PrimaryKeyColumn(name = "begin_time", ordinal = 0, type = PrimaryKeyType.CLUSTERED, ordering = Ordering.DESCENDING)
+	@PrimaryKeyColumn(name = "begin_time", ordinal = 3, type = PrimaryKeyType.CLUSTERED, ordering = Ordering.DESCENDING)
 	private Date beginTime;
 	
 	@Column("alarm_type")
@@ -43,19 +46,19 @@ public class AlarmDistrict {
 		this.beginDate = beginDate;
 	}
 
-	public Long getDistrictId() {
+	public Integer getDistrictId() {
 		return districtId;
 	}
 
-	public void setDistrictId(Long districtId) {
+	public void setDistrictId(Integer districtId) {
 		this.districtId = districtId;
 	}
 
-	public Long getPlatformId() {
+	public Integer getPlatformId() {
 		return platformId;
 	}
 
-	public void setPlatformId(Long platformId) {
+	public void setPlatformId(Integer platformId) {
 		this.platformId = platformId;
 	}
 
@@ -125,7 +128,7 @@ public class AlarmDistrict {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AlarmDistrict other = (AlarmDistrict) obj;
+		AlarmSn other = (AlarmSn) obj;
 		if (beginTime == null) {
 			if (other.beginTime != null)
 				return false;
